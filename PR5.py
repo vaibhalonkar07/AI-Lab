@@ -1,44 +1,30 @@
-
 from collections import deque
 
-start = (1, 2, 3,
-         4, 0, 6,
-         7, 5, 8)
+grid = [
+    ['S', '.', '#'],
+    ['.', '.', '#'],
+    ['#', '.', 'G']
+]
 
-goal = (1, 2, 3,
-        4, 5, 6,
-        7, 8, 0)
+start = (0, 0)
+goal = (2, 2)
 
-def bfs(start):
-    queue = deque([(start, [])])
-    visited = {start}
+queue = deque([(start, [start])])
+visited = {start}
 
-    while queue:
-        state, path = queue.popleft()
-        path = path + [state]
+while queue:
+    (r, c), path = queue.popleft()
 
-        if state == goal:
-            return path
+    if (r, c) == goal:
+        print("Path:", path)
+        break
 
-        b = state.index(0)
+    for dr, dc in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        nr, nc = r + dr, c + dc
 
-        for n in [b-3, b+3, b-1, b+1]:
-            if 0 <= n < 9 and abs(n//3 - b//3) + abs(n%3 - b%3) == 1:
-                s = list(state)
-                s[b], s[n] = s[n], s[b]
-                s = tuple(s)
+        if (0 <= nr < 3 and 0 <= nc < 3
+            and grid[nr][nc] != '#'
+            and (nr, nc) not in visited):
 
-                if s not in visited:
-                    visited.add(s)
-                    queue.append((s, path))
-
-    return None
-
-path = bfs(start)
-
-for step, state in enumerate(path):
-    print("Step", step)
-    print(state[:3])
-    print(state[3:6])
-    print(state[6:])
-    print()
+            visited.add((nr, nc))
+            queue.append(((nr, nc), path + [(nr, nc)]))
